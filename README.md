@@ -1,4 +1,4 @@
-# Trabajo Final Integrador
+# Trabajo Final Integrador - INCLUIT
 
 ## Lineamientos generales del proyecto
 
