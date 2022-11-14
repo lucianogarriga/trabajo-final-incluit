@@ -2,27 +2,25 @@
 
 ## Lineamientos generales del proyecto
 
-- El proyecto debe estar subido a un repositorio de github y deben enviarnos el link al repositorio por mail o compartirlo en el grupo de telegram.
 
 - El proyecto debe utilizar la suite de truffle
 
 - El código del proyecto tiene que estar bien formateado, siguiendo los estándares recomendados por solidity.
 
-- Los contratos tienen que tener sus unit tests, tratando de tener el mayor coverage posible (Pensar test que realmente aporten)
+- Los contratos tienen que tener sus unit tests, tratando de tener el mayor coverage posible.
 
-- El proyecto debe tener al menos una migration
+- El proyecto debe tener al menos una migration.
 
-- El proyecto debería deployarse en una testnet (goerli)
+- El proyecto debería deployarse en una testnet (goerli).
 
-- Opcional: El proyecto debería usar algún estándar RC
+- Opcional: El proyecto debería usar algún estándar RC.
 
 - Opcional: agregar algún script para ejecutar.
 
 # Caso de uso
 
-Los directivos de una empresa local encargada de vender entradas a eventos están buscando competir de lleno en el mundo blockchain. Para eso planean desarrollar una aplicación para 
-gestionar directamente en la testnet goerli los tickets y entradas a diferentes tipos de eventos. El MVP (minimum viable product), está orientado a buscar que los compradores que ya 
-tienen sus tickets los puedan “tokenizar” y crear tickets virtuales dentro de la plataforma. De esta manera se diseñó lo siguiente: 
+Los directivos de una empresa local encargada de vender entradas a eventos están buscando competir de lleno en el mundo blockchain. Para eso planean desarrollar una aplicación para gestionar directamente en la testnet goerli los tickets y entradas a diferentes tipos de eventos. 
+El MVP (minimum viable product), está orientado a buscar que los compradores que ya tienen sus tickets los puedan “tokenizar” y crear tickets virtuales dentro de la plataforma. De esta manera se diseñó lo siguiente: 
 
 El proyecto deberá estar estructurado con un contrato Manager y un contrato Ticket. Las responsabilidades de cada uno son las siguientes: 
 
@@ -34,14 +32,11 @@ El proyecto deberá estar estructurado con un contrato Manager y un contrato Tic
 
 - Deberá tener una función para ver los tickets que están asignados a un dueño particular (address).
 
-- Deberá tener una función para permitir la transferencia de un ticket según su estado, es decir que si un Ticket tiene un estado Transferible, puede cambiar de dueño. Permitiendo 
-que el nuevo dueño envíe ethers a través de la plataforma y que el dueño anterior reciba esos ethers. 
+- Deberá tener una función para permitir la transferencia de un ticket según su estado, es decir que si un Ticket tiene un estado Transferible, puede cambiar de dueño. Permitiendo que el nuevo dueño envíe ethers a través de la plataforma y que el dueño anterior reciba esos ethers. 
 
-- Deberá tener una función para permitir que el dueño de un ticket pueda cambiar el precio del mismo, pero en ese caso el contrato Manager cobra un 5% de comisión y queda en su 
-balance.
+- Deberá tener una función para permitir que el dueño de un ticket pueda cambiar el precio del mismo, pero en ese caso el contrato Manager cobra un 5% de comisión y queda en su balance.
 
-- Deberá tener una función para retornar la cantidad de tickets que tiene la plataforma y el precio total de los tickets. Esto está pensado para mostrar estadísticas y poder llamar 
-la atención de futuros inversores.
+- Deberá tener una función para retornar la cantidad de tickets que tiene la plataforma y el precio total de los tickets. Esto está pensado para mostrar estadísticas y poder llamar la atención de futuros inversores.
 
 - Deberá tener una función para eliminar el ticket de la lista. 
 
