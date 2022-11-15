@@ -4,18 +4,22 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Ticket.sol";
 
-contract Manager is Ownable, Ticket {
-    //ver si crear un mapping(address=>[]) u otra opcion
+contract Manager is Ownable {
+    //Ver mapping o mapping=>[array]
 
-    //receive (){} y fallback(){} ya declarados en Ticket
+    Ticket[] private ticketList;
 
-    constructor(
-        uint256 _id,
-        string memory _eventName,
-        string memory _eventDate,
-        string memory _eventDescription,
-        uint256 _price
-    ) payable Ticket(_id, _eventName, _eventDate, _eventDescription, _price) {}
+    event FundsReceived(uint256 amount);
+
+    receive() external payable {
+        emit FundsReceived(msg.value);
+    }
+
+    fallback() external payable {
+        emit FundsReceived(msg.value);
+    }
+
+    constructor() {}
 
     function createTicket() public {}
 

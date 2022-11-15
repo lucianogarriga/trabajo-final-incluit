@@ -25,15 +25,9 @@ contract Ticket {
         No_Transferible
     }
 
-    event FundsReceived(uint256 amount);
+    receive() external payable {}
 
-    receive() external payable {
-        emit FundsReceived(msg.value);
-    }
-
-    fallback() external payable {
-        emit FundsReceived(msg.value);
-    }
+    fallback() external payable {}
 
     constructor(
         uint256 _id,
