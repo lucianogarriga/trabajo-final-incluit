@@ -11,18 +11,18 @@ contract Ticket {
     address private owner;
 
     enum EventType {
-        Sports,
-        Music,
-        Cinema
+        SPORTS,
+        MUSIC,
+        CINEMA
     }
     enum TicketStatus {
-        Valid,
-        Used,
-        Expired
+        VALID,
+        USED,
+        EXPIRED
     }
     enum TransferStatus {
-        Transferible,
-        No_Transferible
+        TRANSFERIBLE,
+        NO_TRANSFERIBLE
     }
 
     receive() external payable {}
