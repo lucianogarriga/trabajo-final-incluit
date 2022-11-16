@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Ticket.sol";
@@ -7,10 +7,12 @@ import "./Ticket.sol";
 contract Manager is Ownable {
     //Ver mapping o mapping=>[array]
 
-    Ticket[] private ticketList; 
+    mapping(address => uint256) ticketId;
+    Ticket[] private ticketList;
 
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
+    event NewTicket(string eventName, string eventDate, address owner);
 
     receive() external payable {
         emit FundsReceived(msg.value);
@@ -22,24 +24,36 @@ contract Manager is Ownable {
 
     constructor() {}
 
-    //Función p/ tokenizar un ticket 
+    //Función p/ tokenizar un ticket
     //toma los parametros definidos x el constructor de Ticket.sol
     function createTicket(
         uint256 _id,
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
-        uint256 _price
-        ) public {
-            Ticket ticket = new Ticket(_id, _eventName, _eventDate, _eventDescription, _price);
-            ticketList.push(ticket);
-        }
+        uint256 _price  
+    ) public {
+        ticketList.push(new Ticket(
+            setId(_id),
+            _eventName,
+            _eventDate,
+            _eventDescription,
+            _price));
+        emit NewTicket(_eventName, _eventDate, address(this));
+    }
+
+    //Funcion para generar un ID
+    function setId(uint256 _id) private view returns (uint256) {
+        _id = uint256(keccak256(abi.encodePacked(msg.sender, block.timestamp, _id))) 
+        % 100000000;
+        return _id;
+    }
 
     //Función p/ ver todos los tickets de la dApp
-    function showAllTickets() public {}
+    function showAllTickets() public view {}
 
     //Función p/ ver los tickets asignados a un address
-    function showTicketsByAddress() public {}
+    function showTicketsByAddress() public view {}
 
     //Función p/ transferir un ticket (status Transferible)
     function transferTicket(string memory ticket) public onlyOwner {

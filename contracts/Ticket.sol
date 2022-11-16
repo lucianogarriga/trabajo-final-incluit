@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.7;
 
 contract Ticket {
     //Caracteristicas de cada ticket
@@ -8,6 +8,7 @@ contract Ticket {
     string private eventDate;
     string private eventDescription;
     uint256 private price;
+    address private owner;
 
     enum EventType {
         Sports,
@@ -29,6 +30,8 @@ contract Ticket {
     fallback() external payable {}
 
     constructor(
+        //Es una convencion (no un requisito) nombrar variables de parametros de funciones con (_)
+        //para diferenciarlas de las variables globales del contrato
         uint256 _id,
         string memory _eventName,
         string memory _eventDate,
