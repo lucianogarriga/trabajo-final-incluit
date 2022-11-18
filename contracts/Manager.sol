@@ -5,10 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Ticket.sol";
 
 contract Manager is Ownable {
-    //Ver mapping o mapping=>[array]
-
-    mapping(address => uint256) ticketId;
-    Ticket[] private ticketList;
+    mapping(address => Ticket[]) ticketList;
 
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
@@ -31,29 +28,44 @@ contract Manager is Ownable {
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
-        uint256 _price  
-    ) public {
-        ticketList.push(new Ticket(
-            setId(_id),
+        uint256 _price,
+        address _owner
+    ) public payable {
+        Ticket ticket = new Ticket(
+            _id,
             _eventName,
             _eventDate,
             _eventDescription,
-            _price));
+            _price
+        );
+        ticketList[_owner].push(ticket);
         emit NewTicket(_eventName, _eventDate, address(this));
     }
 
     //Funcion para generar un ID
-    function setId(uint256 _id) private view returns (uint256) {
-        _id = uint256(keccak256(abi.encodePacked(msg.sender, block.timestamp, _id))) 
-        % 100000000;
+    function setId() private view returns (uint256) {
+        uint256 _id = 10;
+        _id =
+            uint256(
+                keccak256(abi.encodePacked(msg.sender, block.timestamp, _id))
+            ) %
+            100000000;
         return _id;
     }
 
     //Función p/ ver todos los tickets de la dApp
-    function showAllTickets() public view {}
+    function showAllTickets(address index) external view returns (Ticket[] memory) {
+        return ticketList[index];
+    }
 
     //Función p/ ver los tickets asignados a un address
-    function showTicketsByAddress() public view {}
+    function showTicketsByAddress(address owner)
+        public
+        view
+        returns (Ticket[] memory)
+    {
+        return ticketList[owner];
+    }
 
     //Función p/ transferir un ticket (status Transferible)
     function transferTicket(string memory ticket) public onlyOwner {
