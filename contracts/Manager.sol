@@ -44,18 +44,18 @@ contract Manager is Ownable {
 
     //Funcion para generar un ID
     function setId() private view returns (uint256) {
-        uint256 _id = 10;
-        _id =
+        uint256 num = 10;
+        num =
             uint256(
-                keccak256(abi.encodePacked(msg.sender, block.timestamp, _id))
+                keccak256(abi.encodePacked(msg.sender, block.timestamp, num))
             ) %
             100000000;
-        return _id;
+        return num;
     }
 
     //Función p/ ver todos los tickets de la dApp
-    function showAllTickets(address index) external view returns (Ticket[] memory) {
-        return ticketList[index];
+    function showAllTickets() public view returns (Ticket[] memory) {
+        //TO DO => return ticketList; (como llamar objetos del [] dentro del mapp)
     }
 
     //Función p/ ver los tickets asignados a un address
@@ -68,16 +68,16 @@ contract Manager is Ownable {
     }
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket(string memory ticket) public onlyOwner {
+    function transferTicket() public onlyOwner {
         //TO DO function transferTicket
-        emit TicketTransfered(ticket);
+        //emit TicketTransfered(ticket);
     }
 
     //Función p/ que el dueño de un ticket le cambie el precio (5% comision)
     function changeTicketPrice() public onlyOwner {}
 
     //Función p/ retornar cantidad de tickets de la dApp y el precio total
-    function showStatistitcs() public {}
+    function showStatistitcs() public view {}
 
     //Función p/ eliminar ticket de la lista
     function deleteTicket() public {}
