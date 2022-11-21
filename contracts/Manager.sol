@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Ticket.sol";
 
 contract Manager is Ownable {
-    mapping(address => Ticket[]) ticketList;
+    Ticket[] private ticketList;
 
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
@@ -35,7 +35,7 @@ contract Manager is Ownable {
         string memory _eventDescription,
         uint256 _price
     ) public payable {
-        Ticket ticket = new Ticket(
+        Ticket newTicket = new Ticket(
             _id,
             _eventName,
             _eventDate,
@@ -43,7 +43,7 @@ contract Manager is Ownable {
             _price
         );
         _id = setId();
-        ticketList[msg.sender].push(ticket);
+        ticketList.push(newTicket);
         emit NewTicket(_id, _eventName, _eventDate, msg.sender);
     }
 
@@ -57,21 +57,15 @@ contract Manager is Ownable {
 
     //Función p/ ver todos los tickets de la dApp
     function showAllTickets() public view returns (Ticket[] memory) {
-        //TO DO => return ticketList; (como llamar objetos del [] dentro del mapp)
+        return ticketList;
     }
 
     //Función p/ ver los tickets asignados a un address
-    function showTicketsByAddress(address owner)
-        public
-        view
-        returns (Ticket[] memory)
-    {
-        return ticketList[owner];
-    }
+    function showTicketsByAddress(address) public view returns (Ticket[] memory){}
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket() public onlyOwner {
-        //TO DO function transferTicket
+    function transferTicket(address transferAddres, address receiveAddress) public payable onlyOwner {
+        
         //emit TicketTransfered(ticket);
     }
 
@@ -82,5 +76,12 @@ contract Manager is Ownable {
     function showStatistitcs() public view {}
 
     //Función p/ eliminar ticket de la lista
-    function deleteTicket() public {}
+    function deleteTicket(uint ticketIndex) public payable onlyOwner { 
+        require(ticketIndex < ticketList.length, "Index not found");
+ 
+        for (uint i = ticketIndex; i < ticketList.length -1; i++){
+            ticketList[i] = ticketList[i+1];
+        }
+        ticketList.pop();
+    }
 }

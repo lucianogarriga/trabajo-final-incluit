@@ -25,6 +25,12 @@ contract Ticket {
         NO_TRANSFERIBLE
     }
 
+    EventType private eventType;
+    TicketStatus private ticketStatus;
+    TransferStatus private transferStatus;
+
+    event newTransferStatus(string status);
+
     receive() external payable {}
 
     fallback() external payable {}
@@ -43,6 +49,9 @@ contract Ticket {
         eventDate = _eventDate;
         eventDescription = _eventDescription;
         price = _price;
+        eventType = EventType.SPORTS;
+        ticketStatus = TicketStatus.VALID;
+        transferStatus = TransferStatus.TRANSFERIBLE;
     }
 
     function getMarketPrice() public view returns (uint256){
@@ -52,20 +61,28 @@ contract Ticket {
     function getOwner() public view returns(address){
         return owner;
     }
-
-    //Función p/ cambiar el precio del ticket
+    function getEventName() public view returns(string memory){
+        return eventName;
+    }
+ 
     function changePrice() public {}
-
-    //Función p/ cambiar el estado Transferible/No_Transferible
-    function changeTransferStatus() public {}
 
     //Función p/ cambiar el estado del Ticket(Valid/Used/Expired)
     function changeStatus() public {}
 
+    function setTransferStatus(TransferStatus newStatus) private {
+        transferStatus = newStatus;
+    }
+    //Función p/ cambiar el estado Transferible/No_Transferible
+    function changeTransferStatus() public { 
+        setTransferStatus(TransferStatus.NO_TRANSFERIBLE); 
+        emit newTransferStatus("No Transferible");
+    }
+
     //Función p/ cambiar de dueño (venta)
     function changeOwner() public {}
 
-    //Función p/ generar un ID unico (hash)
+    //Función p/ generar un ID unico (hash) ?
     function generateId() public {}
 
     //Función p/ retornar datos del ticket
