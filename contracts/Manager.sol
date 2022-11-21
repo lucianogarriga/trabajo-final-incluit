@@ -9,7 +9,12 @@ contract Manager is Ownable {
 
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
-    event NewTicket(string eventName, string eventDate, address owner);
+    event NewTicket(
+        uint256 id,
+        string eventName,
+        string eventDate,
+        address owner
+    );
 
     receive() external payable {
         emit FundsReceived(msg.value);
@@ -28,8 +33,7 @@ contract Manager is Ownable {
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
-        uint256 _price,
-        address _owner
+        uint256 _price
     ) public payable {
         Ticket ticket = new Ticket(
             _id,
@@ -38,18 +42,16 @@ contract Manager is Ownable {
             _eventDescription,
             _price
         );
-        ticketList[_owner].push(ticket);
-        emit NewTicket(_eventName, _eventDate, address(this));
+        _id = setId();
+        ticketList[msg.sender].push(ticket);
+        emit NewTicket(_id, _eventName, _eventDate, msg.sender);
     }
 
     //Funcion para generar un ID
     function setId() private view returns (uint256) {
-        uint256 num = 10;
-        num =
-            uint256(
-                keccak256(abi.encodePacked(msg.sender, block.timestamp, num))
-            ) %
-            100000000;
+        uint256 num = uint256(
+            keccak256(abi.encodePacked(msg.sender, block.timestamp))
+        ) % 100000000;
         return num;
     }
 

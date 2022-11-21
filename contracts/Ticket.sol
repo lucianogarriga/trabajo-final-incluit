@@ -45,6 +45,14 @@ contract Ticket {
         price = _price;
     }
 
+    function getMarketPrice() public view returns (uint256){
+        return price;
+    }
+
+    function getOwner() public view returns(address){
+        return owner;
+    }
+
     //Función p/ cambiar el precio del ticket
     function changePrice() public {}
 
