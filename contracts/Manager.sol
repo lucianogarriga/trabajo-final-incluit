@@ -9,10 +9,11 @@ contract Manager is Ownable {
 
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
+    event NewTicketPrice(uint256 newPrice);
     event NewTicket(
-        uint256 id,
         string eventName,
         string eventDate,
+        uint256 _ticketStatus,
         address owner
     );
 
@@ -24,35 +25,32 @@ contract Manager is Ownable {
         emit FundsReceived(msg.value);
     }
 
-    constructor() {}
+    constructor() payable {}
 
     //Función p/ tokenizar un ticket
     //toma los parametros definidos x el constructor de Ticket.sol
     function createTicket(
-        uint256 _id,
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
-        uint256 _price
+        uint256 _price,
+        address _owner,
+        EventType _eventType,
+        TicketStatus _ticketStatus,
+        TransferStatus _transferStatus
     ) public payable {
         Ticket newTicket = new Ticket(
-            _id,
             _eventName,
             _eventDate,
             _eventDescription,
-            _price
+            _price,
+            _owner,
+            _eventType,
+            _ticketStatus,
+            _transferStatus
         );
-        _id = setId();
         ticketList.push(newTicket);
-        emit NewTicket(_id, _eventName, _eventDate, msg.sender);
-    }
-
-    //Funcion para generar un ID
-    function setId() private view returns (uint256) {
-        uint256 num = uint256(
-            keccak256(abi.encodePacked(msg.sender, block.timestamp))
-        ) % 100000000;
-        return num;
+        emit NewTicket(_eventName, _eventDate, uint256(_ticketStatus), _owner);
     }
 
     //Función p/ ver todos los tickets de la dApp
@@ -61,26 +59,40 @@ contract Manager is Ownable {
     }
 
     //Función p/ ver los tickets asignados a un address
-    function showTicketsByAddress(address) public view returns (Ticket[] memory){}
+    function showTicketsByAddress(address)
+        public
+        view
+        returns (Ticket[] memory)
+    {}
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket(address transferAddres, address receiveAddress) public payable onlyOwner {
-        
+    function transferTicket(address transferAddres, address receiveAddress)
+        public
+        payable
+        onlyOwner
+    {
         //emit TicketTransfered(ticket);
     }
 
     //Función p/ que el dueño de un ticket le cambie el precio (5% comision)
-    function changeTicketPrice() public onlyOwner {}
+    function changeTicketPrice(Ticket ticket) public payable onlyOwner {
+        uint256 commissionPercentage = 5;
+        uint256 managerFee = (msg.value * commissionPercentage) / 100;
+        require(msg.value >= managerFee, "The amount transfer is insufficient");
+
+        Ticket(ticket).changePrice(msg.value);
+        emit NewTicketPrice(msg.value);
+    }
 
     //Función p/ retornar cantidad de tickets de la dApp y el precio total
     function showStatistitcs() public view {}
 
     //Función p/ eliminar ticket de la lista
-    function deleteTicket(uint ticketIndex) public payable onlyOwner { 
+    function deleteTicket(uint256 ticketIndex) public payable onlyOwner {
         require(ticketIndex < ticketList.length, "Index not found");
- 
-        for (uint i = ticketIndex; i < ticketList.length -1; i++){
-            ticketList[i] = ticketList[i+1];
+
+        for (uint256 i = ticketIndex; i < ticketList.length - 1; i++) {
+            ticketList[i] = ticketList[i + 1];
         }
         ticketList.pop();
     }
