@@ -17,7 +17,7 @@ enum TransferStatus {
 }
 
 contract Ticket {
-    //Caracteristicas de cada ticket
+    //Ticket characteristics
     uint256 private id;
     string private eventName;
     string private eventDate;
@@ -31,13 +31,13 @@ contract Ticket {
     event newTransferStatus(string);
     event newTicketStatus(string);
 
-    receive() external payable {}
+    // receive() external payable {}
 
-    fallback() external payable {}
+    // fallback() external payable {}
 
     constructor(
-        //Es una convencion (no un requisito) nombrar variables de parametros de funciones con (_)
-        //para diferenciarlas de las variables globales del contrato
+        //It's a convention (not a requirement) to name function parameter variables with (_)
+        //to differentiate them from the global variables of the contract
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
@@ -69,52 +69,28 @@ contract Ticket {
     function getEventName() external view returns (string memory) {
         return eventName;
     }
+    function getTicketStatus() external view returns (TicketStatus){
+        return ticketStatus;
+    }
 
-    //Función p/ cambiar el precio del ticket
+    //FUNCTION 1 => changePrice()
     function changePrice(uint256 _newPrice) external {
         price = _newPrice;
     }
 
-    //Función p/ cambiar de dueño (venta)
-    function changeOwner(address _newOwner) private {
-        owner = _newOwner;
-    }
-
-    //Función p/ generar un ID unico (hash)
-    function setId() private view returns (uint256) {
-        uint256 num = uint256(
-            keccak256(abi.encodePacked(msg.sender, block.timestamp))
-        ) % 100000000;
-        return num;
-    }
-
-    function setTicketStatus(TicketStatus newTickStatus) private {
-        ticketStatus = newTickStatus;
-    }
-
-    //Función p/ cambiar el estado del Ticket(A Used)
-    function changeStatusUsed() public {
-        setTicketStatus(TicketStatus.USED);
-        emit newTicketStatus("TicketStatus = USED");
-    }
-
-    //Función p/ cambiar el estado del Ticket(A Expired)
-    function changeStatusExpired() public {
-        setTicketStatus(TicketStatus.EXPIRED);
-        emit newTicketStatus("TicketStatus = EXPIRED");
-    }
-
+    //FUNCTION 2 => changeTransferStatus()
     function setTransferStatus(TransferStatus newTranStatus) private {
         transferStatus = newTranStatus;
     }
 
-    //Función p/ cambiar el estado Transferible/No_Transferible
+    //FUNCTION TO CHANGE STATE = Transferible/No_Transferible
+    //OPTION A) 
     function changeTransferStatus() public {
         setTransferStatus(TransferStatus.NO_TRANSFERIBLE);
         emit newTransferStatus("TransferStatus = NO_TRANSFERIBLE");
         //Se cambia 1 sola vez y es preciso el evento
     }
-
+    //OPTION B) 
     function changeTransferStat(uint256 newTransfStat) public {
         require(
             newTransfStat <= uint256(TransferStatus.NO_TRANSFERIBLE),
@@ -126,7 +102,36 @@ contract Ticket {
         //Pero falta definir como asociar cada evento a cada status
     }
 
-    //Función p/ retornar datos del ticket
+    /*FUNCTION 3 => changeStatus()
+    */
+    function setTicketStatus(TicketStatus newTickStatus) private {
+        ticketStatus = newTickStatus;
+    }
+    //Function to change the ticket status to USED 
+    function changeStatusUsed() public {
+        setTicketStatus(TicketStatus.USED);
+        emit newTicketStatus("TicketStatus = USED");
+    }
+    //Function to change the ticket status to EXPIRED
+    function changeStatusExpired() public {
+        setTicketStatus(TicketStatus.EXPIRED);
+        emit newTicketStatus("TicketStatus = EXPIRED");
+    }
+
+    //FUNCTION 4 => changeOwner()
+    function changeOwner(address _newOwner) private {
+        owner = _newOwner;
+    }
+
+    //FUNCTION 5 => create an ID for each ticket => setId()
+    function setId() private view returns (uint256) {
+        uint256 num = uint256(
+            keccak256(abi.encodePacked(msg.sender, block.timestamp))
+        ) % 100000000;
+        return num;
+    }
+
+    //FUNCTION 6 => return ticket information => showInformation()
     function showInformation()
         public
         view
@@ -155,3 +160,4 @@ contract Ticket {
         );
     }
 }
+

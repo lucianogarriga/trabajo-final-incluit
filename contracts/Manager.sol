@@ -13,7 +13,7 @@ contract Manager is Ownable {
     event NewTicket(
         string eventName,
         string eventDate,
-        uint256 _ticketStatus,
+        uint _ticketStatus,
         address owner
     );
 
@@ -27,8 +27,9 @@ contract Manager is Ownable {
 
     constructor() payable {}
 
-    //Función p/ tokenizar un ticket
-    //toma los parametros definidos x el constructor de Ticket.sol
+    /*FUNCTION 1 => Tokenize a ticket
+    It takes the parameters defined by the constructor of Ticket.sol
+    */
     function createTicket(
         string memory _eventName,
         string memory _eventDate,
@@ -48,22 +49,47 @@ contract Manager is Ownable {
             _eventType,
             _ticketStatus,
             _transferStatus
-        );
+        ); 
         ticketList.push(newTicket);
-        emit NewTicket(_eventName, _eventDate, uint256(_ticketStatus), _owner);
+        emit NewTicket(_eventName, _eventDate, uint(_ticketStatus), _owner);
     }
 
-    //Función p/ ver todos los tickets de la dApp
-    function showAllTickets() public view returns (Ticket[] memory) {
+    //Function to see all tickets in the dApp
+    /*function showAllTicket() public view returns (Ticket[] memory) {
         return ticketList;
     }
+    */
+    function showAllTickets(uint256 index) public view returns (
+        address ticketAddr,
+        uint256 ticketId,
+        string memory eventName,
+        string memory eventDate,
+        uint256 ticketPrice, 
+        string memory eventDescription,
+        EventType eventType,
+        TicketStatus ticketStatus,
+        address owner
+        ) {
+        return Ticket(ticketList[index]).showInformation();
+    }
 
-    //Función p/ ver los tickets asignados a un address
-    function showTicketsByAddress(address)
+    //Function to see the tickets assigned to an address
+    function showTicketsByAddress(address payable _ticketAddr)
         public
         view
-        returns (Ticket[] memory)
-    {}
+        returns (        
+        address ticketAddr,
+        uint256 ticketId,
+        string memory eventName,
+        string memory eventDate,
+        uint256 ticketPrice, 
+        string memory eventDescription,
+        EventType eventType,
+        TicketStatus ticketStatus,
+        address owner)
+    {
+        return Ticket(_ticketAddr).showInformation();
+    }
 
     //Función p/ transferir un ticket (status Transferible)
     function transferTicket(address transferAddres, address receiveAddress)
@@ -75,8 +101,12 @@ contract Manager is Ownable {
     }
 
     //Función p/ que el dueño de un ticket le cambie el precio (5% comision)
-    function changeTicketPrice(Ticket ticket) public payable onlyOwner {
-        uint256 commissionPercentage = 5;
+    function changeTicketPrice(Ticket ticket)
+        public
+        payable
+        onlyOwner 
+    {
+        uint256 commissionPercentage =5;
         uint256 managerFee = (msg.value * commissionPercentage) / 100;
         require(msg.value >= managerFee, "The amount transfer is insufficient");
 
@@ -88,7 +118,7 @@ contract Manager is Ownable {
     function showStatistitcs() public view {}
 
     //Función p/ eliminar ticket de la lista
-    function deleteTicket(uint256 ticketIndex) public payable onlyOwner {
+    function deleteTicket(uint256 ticketIndex) public onlyOwner {
         require(ticketIndex < ticketList.length, "Index not found");
 
         for (uint256 i = ticketIndex; i < ticketList.length - 1; i++) {
