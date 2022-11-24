@@ -69,12 +69,15 @@ contract Ticket {
     function getEventName() external view returns (string memory) {
         return eventName;
     }
-    function getTicketStatus() external view returns (TicketStatus){
+
+    function getTicketStatus() external view returns (TicketStatus) {
         return ticketStatus;
     }
 
     //FUNCTION 1 => changePrice()
     function changePrice(uint256 _newPrice) external {
+        //Validate the _newPrice is another amount than price
+        require(_newPrice != price);
         price = _newPrice;
     }
 
@@ -84,34 +87,28 @@ contract Ticket {
     }
 
     //FUNCTION TO CHANGE STATE = Transferible/No_Transferible
-    //OPTION A) 
-    function changeTransferStatus() public {
+    function statusNoTransfe() public { 
         setTransferStatus(TransferStatus.NO_TRANSFERIBLE);
         emit newTransferStatus("TransferStatus = NO_TRANSFERIBLE");
-        //Se cambia 1 sola vez y es preciso el evento
     }
-    //OPTION B) 
-    function changeTransferStat(uint256 newTransfStat) public {
-        require(
-            newTransfStat <= uint256(TransferStatus.NO_TRANSFERIBLE),
-            "Out of Range"
-        );
-        transferStatus = TransferStatus(newTransfStat);
-        emit newTransferStatus("New transfer status");
-        //Se puede cambiar de transferible a no_transferible las veces que sea necesario
-        //Pero falta definir como asociar cada evento a cada status
+
+    function statusTransfe() public {
+        setTransferStatus(TransferStatus.TRANSFERIBLE);
+        emit newTransferStatus("TransferStatus = TRANSFERIBLE");
     }
 
     /*FUNCTION 3 => changeStatus()
-    */
+     */
     function setTicketStatus(TicketStatus newTickStatus) private {
         ticketStatus = newTickStatus;
     }
-    //Function to change the ticket status to USED 
+
+    //Function to change the ticket status to USED
     function changeStatusUsed() public {
         setTicketStatus(TicketStatus.USED);
         emit newTicketStatus("TicketStatus = USED");
     }
+
     //Function to change the ticket status to EXPIRED
     function changeStatusExpired() public {
         setTicketStatus(TicketStatus.EXPIRED);
@@ -120,6 +117,8 @@ contract Ticket {
 
     //FUNCTION 4 => changeOwner()
     function changeOwner(address _newOwner) private {
+        //Validate the newOwner is other address than the owner
+        require(_newOwner != owner);
         owner = _newOwner;
     }
 
@@ -136,28 +135,27 @@ contract Ticket {
         public
         view
         returns (
-            address _ticketAddr,
+            //address _ticketAddr,
             uint256 _id,
             string memory _eventName,
             string memory _eventDate,
-            uint256 _price,
             string memory _eventDescription,
+            uint256 _price,
+            address _ownerAddr,
             EventType _eventType,
-            TicketStatus _status,
-            address _ownerAddr
+            TicketStatus _status
         )
     {
         return (
-            address(this),
+            //address(this),
             id,
             eventName,
             eventDate,
-            price,
             eventDescription,
+            price,
+            owner,
             eventType,
-            ticketStatus,
-            owner
+            ticketStatus
         );
     }
 }
-

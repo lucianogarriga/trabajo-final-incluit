@@ -10,13 +10,11 @@ contract Manager is Ownable {
     event FundsReceived(uint256 amount);
     event TicketTransfered(string ticket);
     event NewTicketPrice(uint256 newPrice);
-    event NewTicket(
-        string eventName,
-        string eventDate,
-        uint _ticketStatus,
+    event NewTicket( 
         address owner
-    );
+    ); 
 
+    uint256 public ticketCount;
     receive() external payable {
         emit FundsReceived(msg.value);
     }
@@ -25,7 +23,7 @@ contract Manager is Ownable {
         emit FundsReceived(msg.value);
     }
 
-    constructor() payable {}
+    constructor()  {}
 
     /*FUNCTION 1 => Tokenize a ticket
     It takes the parameters defined by the constructor of Ticket.sol
@@ -51,45 +49,46 @@ contract Manager is Ownable {
             _transferStatus
         ); 
         ticketList.push(newTicket);
-        emit NewTicket(_eventName, _eventDate, uint(_ticketStatus), _owner);
+        ticketCount +=1;
+        emit NewTicket( _owner);
     }
 
     //Function to see all tickets in the dApp
-    /*function showAllTicket() public view returns (Ticket[] memory) {
-        return ticketList;
+    function totalTickets() public view returns (uint256 total) {
+        return ticketList.length;
     }
-    */
+
     function showAllTickets(uint256 index) public view returns (
-        address ticketAddr,
+        //address ticketAddr,
         uint256 ticketId,
         string memory eventName,
         string memory eventDate,
-        uint256 ticketPrice, 
         string memory eventDescription,
+        uint256 ticketPrice, 
+        address owner,
         EventType eventType,
-        TicketStatus ticketStatus,
-        address owner
+        TicketStatus ticketStatus 
         ) {
-        return Ticket(ticketList[index]).showInformation();
+        return Ticket(ticketList[index]).showInformation(); 
     }
 
     //Function to see the tickets assigned to an address
-    function showTicketsByAddress(address payable _ticketAddr)
-        public
-        view
-        returns (        
-        address ticketAddr,
-        uint256 ticketId,
-        string memory eventName,
-        string memory eventDate,
-        uint256 ticketPrice, 
-        string memory eventDescription,
-        EventType eventType,
-        TicketStatus ticketStatus,
-        address owner)
-    {
-        return Ticket(_ticketAddr).showInformation();
-    }
+    // function showTicketsByAddress(address _ticketAddr)
+    //     public
+    //     view 
+    //     returns (
+    //         uint256 ticketId,
+    //         string memory eventName,
+    //         string memory eventDate,
+    //         string memory eventDescription,
+    //         uint256 ticketPrice, 
+    //         address owner,
+    //         EventType eventType,
+    //         TicketStatus ticketStatus 
+    //     )
+    //     {
+    //         return Ticket(ticketList[_ticketAddr].showInformation());
+    // }
 
     //Función p/ transferir un ticket (status Transferible)
     function transferTicket(address transferAddres, address receiveAddress)
@@ -115,7 +114,14 @@ contract Manager is Ownable {
     }
 
     //Función p/ retornar cantidad de tickets de la dApp y el precio total
-    function showStatistitcs() public view {}
+    function showStatistitcs() public view returns (
+        uint256 allTickets,
+        uint256 totalFunds
+    ) {
+        uint256 allT = totalTickets();
+        uint256 funds = address(this).balance;
+        return (allT, funds); 
+    }
 
     //Función p/ eliminar ticket de la lista
     function deleteTicket(uint256 ticketIndex) public onlyOwner {
