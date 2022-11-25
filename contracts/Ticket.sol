@@ -41,20 +41,20 @@ contract Ticket {
         string memory _eventName,
         string memory _eventDate,
         string memory _eventDescription,
-        uint256 _price,
-        address _owner,
         EventType _eventType,
         TicketStatus _ticketStatus,
-        TransferStatus _transferStatus
+        TransferStatus _transferStatus,
+        uint256 _price,
+        address _owner
     ) {
         id = setId();
         eventName = _eventName;
         eventDate = _eventDate;
         eventDescription = _eventDescription;
-        price = _price;
         eventType = _eventType;
         ticketStatus = _ticketStatus;
         transferStatus = _transferStatus;
+        price = _price;
         owner = _owner;
     }
 
@@ -87,7 +87,7 @@ contract Ticket {
     }
 
     //FUNCTION TO CHANGE STATE = Transferible/No_Transferible
-    function statusNoTransfe() public { 
+    function statusNoTransfe() public {
         setTransferStatus(TransferStatus.NO_TRANSFERIBLE);
         emit newTransferStatus("TransferStatus = NO_TRANSFERIBLE");
     }
@@ -140,10 +140,10 @@ contract Ticket {
             string memory _eventName,
             string memory _eventDate,
             string memory _eventDescription,
-            uint256 _price,
-            address _ownerAddr,
             EventType _eventType,
-            TicketStatus _status
+            TicketStatus _status,
+            uint256 _price,
+            address _ownerAddr
         )
     {
         return (
@@ -152,10 +152,10 @@ contract Ticket {
             eventName,
             eventDate,
             eventDescription,
-            price,
-            owner,
             eventType,
-            ticketStatus
+            ticketStatus,
+            price,
+            owner
         );
     }
 }
