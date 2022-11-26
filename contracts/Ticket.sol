@@ -70,6 +70,10 @@ contract Ticket {
         return eventName;
     }
 
+    function getTransferStatus() external view returns (TransferStatus) {
+        return transferStatus;
+    }
+
     function getTicketStatus() external view returns (TicketStatus) {
         return ticketStatus;
     }

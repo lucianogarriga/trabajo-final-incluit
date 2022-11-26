@@ -6,9 +6,10 @@ import "./Ticket.sol";
 
 contract Manager is Ownable {
     Ticket[] private ticketList;
+    mapping(Ticket => address) Owners;
 
     event FundsReceived(uint256 amount);
-    event TicketTransfered(string ticket);
+    event NewOwner(address newOner);
     event NewTicketPrice(uint256 newPrice);
     event NewTicket(string eventName, uint256 price, address owner);
 
@@ -37,7 +38,7 @@ contract Manager is Ownable {
         uint256 _price,
         address _owner
     ) public payable {
-        Ticket newTicket = new Ticket(
+        Ticket ticket = new Ticket(
             _eventName,
             _eventDate,
             _eventDescription,
@@ -47,7 +48,8 @@ contract Manager is Ownable {
             _price,
             _owner
         );
-        ticketList.push(newTicket);
+        Owners[ticket] = _owner;
+        ticketList.push(ticket);
         ticketCount += 1;
         emit NewTicket(_eventName, _price, _owner);
     }
@@ -76,30 +78,42 @@ contract Manager is Ownable {
     }
 
     //Function to see the tickets assigned to an address
-    // function showTicketsByAddress(address _ticketAddr)
-    //     public
-    //     view
-    //     returns (
-    //         uint256 ticketId,
-    //         string memory eventName,
-    //         string memory eventDate,
-    //         string memory eventDescription,
-    //         uint256 ticketPrice,
-    //         address owner,
-    //         EventType eventType,
-    //         TicketStatus ticketStatus
-    //     )
-    //     {
-    //         return Ticket(ticketList[_ticketAddr].showInformation());
-    // }
+    function showTicketsByAddress(address _ticketAddr)
+        public
+        view
+        returns (
+            uint256 ticketId,
+            string memory eventName,
+            string memory eventDate,
+            string memory eventDescription,
+            EventType eventType,
+            TicketStatus ticketStatus,
+            uint256 ticketPrice,
+            address owner
+        )
+    {
+        return Ticket(_ticketAddr).showInformation();
+    }
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket(address transferAddres, address receiveAddress)
+    function transferTicket(Ticket ticket, address newAddress)
         public
         payable
         onlyOwner
-    { 
-        //emit TicketTransfered(ticket);
+    {
+        require(
+            ticket.getTransferStatus() == TransferStatus.TRANSFERIBLE,
+            "This ticket isn't transferible"
+        );
+        require(
+            ticket.getTicketStatus() == TicketStatus.VALID,
+            "This ticket isn't valid"
+        );
+        address addressSent = Owners[ticket];
+        (bool sent, ) = addressSent.call{value: msg.value}("");
+        require(sent == true, "Error to transfer ticket");
+        Owners[ticket] = newAddress;
+        emit NewOwner(newAddress);
     }
 
     //Función p/ que el dueño de un ticket le cambie el precio (5% comision)
