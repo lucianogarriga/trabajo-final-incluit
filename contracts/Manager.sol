@@ -59,6 +59,10 @@ contract Manager is Ownable {
         return ticketList.length;
     }
 
+    function getTickets() public view returns (Ticket[] memory){
+        return ticketList;
+    }
+
     function showAllTickets(uint256 index)
         public
         view
