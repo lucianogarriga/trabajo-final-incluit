@@ -120,7 +120,7 @@ contract Ticket {
     }
 
     //FUNCTION 4 => changeOwner()
-    function changeOwner(address _newOwner) private {
+    function changeOwner(address _newOwner) external {
         //Validate the newOwner is other address than the owner
         require(_newOwner != owner);
         owner = _newOwner;
@@ -139,7 +139,7 @@ contract Ticket {
         public
         view
         returns (
-            //address _ticketAddr,
+            address _ticketAddr,
             uint256 _id,
             string memory _eventName,
             string memory _eventDate,
@@ -151,7 +151,7 @@ contract Ticket {
         )
     {
         return (
-            //address(this),
+            address(this),
             id,
             eventName,
             eventDate,

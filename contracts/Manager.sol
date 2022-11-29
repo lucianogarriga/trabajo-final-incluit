@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Ticket.sol";
 
 contract Manager is Ownable {
+    address public immutable MANAGER;
+
     Ticket[] private ticketList;
     mapping(Ticket => address) Owners;
 
@@ -23,7 +25,9 @@ contract Manager is Ownable {
         emit FundsReceived(msg.value);
     }
 
-    constructor() {}
+    constructor() {
+        MANAGER = msg.sender;
+    }
 
     /*FUNCTION 1 => Tokenize a ticket
     It takes the parameters defined by the constructor of Ticket.sol
@@ -35,8 +39,7 @@ contract Manager is Ownable {
         EventType _eventType,
         TicketStatus _ticketStatus,
         TransferStatus _transferStatus,
-        uint256 _price,
-        address _owner
+        uint256 _price
     ) public payable {
         Ticket ticket = new Ticket(
             _eventName,
@@ -46,12 +49,12 @@ contract Manager is Ownable {
             _ticketStatus,
             _transferStatus,
             _price,
-            _owner
+            address(msg.sender)
         );
-        Owners[ticket] = _owner;
+        Owners[ticket] = address(msg.sender);
         ticketList.push(ticket);
         ticketCount += 1;
-        emit NewTicket(_eventName, _price, _owner);
+        emit NewTicket(_eventName, _price, address(msg.sender));
     }
 
     //Function to see all tickets in the dApp
@@ -59,7 +62,7 @@ contract Manager is Ownable {
         return ticketList.length;
     }
 
-    function getTickets() public view returns (Ticket[] memory){
+    function getTickets() public view returns (Ticket[] memory) {
         return ticketList;
     }
 
@@ -67,7 +70,7 @@ contract Manager is Ownable {
         public
         view
         returns (
-            //address ticketAddr,
+            address ticketAddr,
             uint256 ticketId,
             string memory eventName,
             string memory eventDate,
@@ -86,6 +89,7 @@ contract Manager is Ownable {
         public
         view
         returns (
+            address ticketAddr,
             uint256 ticketId,
             string memory eventName,
             string memory eventDate,
@@ -100,7 +104,7 @@ contract Manager is Ownable {
     }
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket(Ticket ticket, address newAddress)
+    function transferTicket(Ticket ticket, address _newOwner)
         public
         payable
         onlyOwner
@@ -116,17 +120,22 @@ contract Manager is Ownable {
         address addressSent = Owners[ticket];
         (bool sent, ) = addressSent.call{value: msg.value}("");
         require(sent == true, "Error to transfer ticket");
-        Owners[ticket] = newAddress;
-        emit NewOwner(newAddress);
+        Owners[ticket] = _newOwner;
+        Ticket(ticket).changeOwner(_newOwner);
+        //emit NewOwner(newAddress);
     }
 
-    //Función p/ que el dueño de un ticket le cambie el precio (5% comision)
+    //Función p/ cambiar el precio de un ticket / Se cobra un 5% comision hacia el manager
     function changeTicketPrice(Ticket ticket) public payable onlyOwner {
         uint256 commissionPercentage = 5;
+
         uint256 managerFee = (msg.value * commissionPercentage) / 100;
-        require(msg.value >= managerFee, "The amount transfer is insufficient");
+
+        require(msg.value >= managerFee, "The amount is insufficient");
 
         Ticket(ticket).changePrice(msg.value);
+
+        payable(MANAGER).transfer(managerFee);
         emit NewTicketPrice(msg.value);
     }
 
