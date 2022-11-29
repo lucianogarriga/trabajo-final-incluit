@@ -42,5 +42,7 @@ contract("Manager", function (accounts) {
       //en caso de no ser correcto, que tire el error y emita el mensaje
       assert.equal(ticketList.length, 1, "Ticket list should be 1");
     })
+
+    
   })
 });

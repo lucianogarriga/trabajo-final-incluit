@@ -39,7 +39,8 @@ contract Manager is Ownable {
         EventType _eventType,
         TicketStatus _ticketStatus,
         TransferStatus _transferStatus,
-        uint256 _price
+        uint256 _price,
+        address
     ) public payable {
         Ticket ticket = new Ticket(
             _eventName,
@@ -117,9 +118,12 @@ contract Manager is Ownable {
             ticket.getTicketStatus() == TicketStatus.VALID,
             "This ticket isn't valid"
         );
+
         address addressSent = Owners[ticket];
+
         (bool sent, ) = addressSent.call{value: msg.value}("");
         require(sent == true, "Error to transfer ticket");
+
         Owners[ticket] = _newOwner;
         Ticket(ticket).changeOwner(_newOwner);
         //emit NewOwner(newAddress);
