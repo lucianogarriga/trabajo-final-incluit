@@ -8,10 +8,11 @@ contract Manager is Ownable {
     address public immutable MANAGER;
 
     Ticket[] private ticketList;
-    mapping(Ticket => address) Owners;
+
+    address[] public Owners;
 
     event FundsReceived(uint256 amount);
-    event NewOwner(address newOner);
+    event TicketTransfered(uint256 ticketPrice, address newOner);
     event NewTicketPrice(uint256 newPrice);
     event NewTicket(string eventName, uint256 price, address owner);
 
@@ -40,7 +41,7 @@ contract Manager is Ownable {
         TicketStatus _ticketStatus,
         TransferStatus _transferStatus,
         uint256 _price,
-        address
+        address _owner 
     ) public payable {
         Ticket ticket = new Ticket(
             _eventName,
@@ -50,12 +51,12 @@ contract Manager is Ownable {
             _ticketStatus,
             _transferStatus,
             _price,
-            address(msg.sender)
+            _owner
         );
-        Owners[ticket] = address(msg.sender);
+        Owners.push(_owner);
         ticketList.push(ticket);
         ticketCount += 1;
-        emit NewTicket(_eventName, _price, address(msg.sender));
+        emit NewTicket(_eventName, _price, _owner);
     }
 
     //Function to see all tickets in the dApp
@@ -105,28 +106,23 @@ contract Manager is Ownable {
     }
 
     //Función p/ transferir un ticket (status Transferible)
-    function transferTicket(Ticket ticket, address _newOwner)
-        public
-        payable
-        onlyOwner
-    {
+    function transferTicket(uint256 index, address newOwner) public payable {
         require(
-            ticket.getTransferStatus() == TransferStatus.TRANSFERIBLE,
+            ticketList[index].getTransferStatus() ==
+                TransferStatus.TRANSFERIBLE,
             "This ticket isn't transferible"
         );
         require(
-            ticket.getTicketStatus() == TicketStatus.VALID,
+            ticketList[index].getTicketStatus() == TicketStatus.VALID,
             "This ticket isn't valid"
         );
-
-        address addressSent = Owners[ticket];
-
-        (bool sent, ) = addressSent.call{value: msg.value}("");
-        require(sent == true, "Error to transfer ticket");
-
-        Owners[ticket] = _newOwner;
-        Ticket(ticket).changeOwner(_newOwner);
-        //emit NewOwner(newAddress);
+        address preOwner = ticketList[index].getOwner();
+        (bool sent, ) = preOwner.call{value: msg.value}("");
+        require(sent, "Error to transfer ticket");
+        ticketList[index].changeOwner(newOwner);
+        //Owners[ticketList] = newOwner;
+        //Owners.changeOwner(newOwner);
+        emit TicketTransfered(msg.value, newOwner);
     }
 
     //Función p/ cambiar el precio de un ticket / Se cobra un 5% comision hacia el manager
