@@ -6,17 +6,22 @@ import "./Ticket.sol";
 
 contract Manager is Ownable {
     address public immutable MANAGER;
-
+    //Array of tickets
     Ticket[] private ticketList;
+    //Array of owners
+    address[] private Owners;
 
-    address[] public Owners;
+    uint256 fee = 5;
+    uint256 ticketCount;
+    uint256 ticketFunds;
 
+    event TicketCreated(string eventName, uint256 price, address owner);
     event FundsReceived(uint256 amount);
     event TicketTransfered(uint256 ticketPrice, address newOner);
     event NewTicketPrice(uint256 newPrice);
-    event NewTicket(string eventName, uint256 price, address owner);
-
-    uint256 public ticketCount;
+    event ShowComission(uint256);
+    event TicketDeleted(uint256);
+    event ViewStatistics(uint256, uint256);
 
     receive() external payable {
         emit FundsReceived(msg.value);
@@ -40,8 +45,7 @@ contract Manager is Ownable {
         EventType _eventType,
         TicketStatus _ticketStatus,
         TransferStatus _transferStatus,
-        uint256 _price,
-        address _owner 
+        uint256 _price
     ) public payable {
         Ticket ticket = new Ticket(
             _eventName,
@@ -51,12 +55,13 @@ contract Manager is Ownable {
             _ticketStatus,
             _transferStatus,
             _price,
-            _owner
+            msg.sender
         );
-        Owners.push(_owner);
+        Owners.push(msg.sender);
         ticketList.push(ticket);
         ticketCount += 1;
-        emit NewTicket(_eventName, _price, _owner);
+        ticketFunds = ticketFunds + _price;
+        emit TicketCreated(_eventName, _price, address(msg.sender));
     }
 
     //Function to see all tickets in the dApp
@@ -67,6 +72,14 @@ contract Manager is Ownable {
     function getTickets() public view returns (Ticket[] memory) {
         return ticketList;
     }
+
+    function showTicketAddr(uint256 index) public view returns (Ticket) {
+        return ticketList[index];
+    }
+
+    // function showTicketId(uint256 index) public {
+    //     emit ShowTicketId(ticketList[index].getTicketId());
+    // }
 
     function showAllTickets(uint256 index)
         public
@@ -121,42 +134,48 @@ contract Manager is Ownable {
         require(sent, "Error to transfer ticket");
         ticketList[index].changeOwner(newOwner);
         //Owners[ticketList] = newOwner;
-        //Owners.changeOwner(newOwner);
         emit TicketTransfered(msg.value, newOwner);
     }
 
+    function getFee(uint256 ticketPrice) public view returns (uint256) {
+        return (ticketPrice * fee) / 100;
+    }
+
     //Función p/ cambiar el precio de un ticket / Se cobra un 5% comision hacia el manager
-    function changeTicketPrice(Ticket ticket) public payable onlyOwner {
-        uint256 commissionPercentage = 5;
+    function changeTicketPrice(Ticket ticket, uint256 newPrice) public payable {
+        uint256 feeToCheck = getFee(newPrice);
 
-        uint256 managerFee = (msg.value * commissionPercentage) / 100;
+        require(
+            msg.value >= feeToCheck,
+            "Fee received isn't enough. Send the 5% of new price"
+        );
 
-        require(msg.value >= managerFee, "The amount is insufficient");
+        Ticket(ticket).changePrice(newPrice);
 
-        Ticket(ticket).changePrice(msg.value);
-
-        payable(MANAGER).transfer(managerFee);
-        emit NewTicketPrice(msg.value);
+        emit NewTicketPrice(newPrice);
+        emit ShowComission(msg.value);
     }
 
     //Función p/ retornar cantidad de tickets de la dApp y el precio total
     function showStatistitcs()
         public
-        view
-        returns (uint256 allTickets, uint256 totalFunds)
+        returns (uint256 allTickets, uint256 allFunds)
     {
-        uint256 allT = totalTickets();
-        uint256 funds = address(this).balance;
-        return (allT, funds);
+        uint256 tickets = ticketCount;
+        uint256 totalFunds = ticketFunds;
+        emit ViewStatistics(tickets, totalFunds);
+        return (ticketCount, ticketFunds);
     }
 
     //Función p/ eliminar ticket de la lista
-    function deleteTicket(uint256 ticketIndex) public onlyOwner {
+    function deleteTicket(uint256 ticketIndex) public {
         require(ticketIndex < ticketList.length, "Index not found");
 
         for (uint256 i = ticketIndex; i < ticketList.length - 1; i++) {
             ticketList[i] = ticketList[i + 1];
         }
         ticketList.pop();
+        ticketCount -= 1;
+        emit TicketDeleted(ticketIndex);
     }
 }

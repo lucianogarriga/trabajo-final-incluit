@@ -31,10 +31,6 @@ contract Ticket {
     event newTransferStatus(string);
     event newTicketStatus(string);
 
-    // receive() external payable {}
-
-    // fallback() external payable {}
-
     constructor(
         //It's a convention (not a requirement) to name function parameter variables with (_)
         //to differentiate them from the global variables of the contract
@@ -58,12 +54,21 @@ contract Ticket {
         owner = _owner;
     }
 
+    modifier isOwner() {
+        require(msg.sender == owner, "");
+        _;
+    }
+
     function getMarketPrice() external view returns (uint256) {
         return price;
     }
 
     function getOwner() external view returns (address) {
         return owner;
+    }
+
+    function getTicketId() external view returns (uint256) {
+        return id;
     }
 
     function getEventName() external view returns (string memory) {
