@@ -11,10 +11,15 @@ contract Manager is Ownable {
     //Array of owners
     address[] private Owners;
 
+    //Amount of fee to calculate percentage
     uint256 fee = 5;
+    //Amount of tickets
     uint256 ticketCount;
+    //Total funds of all tickets
     uint256 ticketFunds;
 
+    /*Events to call in many functions, 
+    to improve user experience*/
     event TicketCreated(string eventName, uint256 price, address owner);
     event FundsReceived(uint256 amount);
     event TicketTransfered(uint256 ticketPrice, address newOner);
@@ -23,6 +28,7 @@ contract Manager is Ownable {
     event TicketDeleted(uint256);
     event ViewStatistics(uint256, uint256);
 
+    //Receive & fallback so that the contract can receive ethers
     receive() external payable {
         emit FundsReceived(msg.value);
     }
@@ -73,14 +79,12 @@ contract Manager is Ownable {
         return ticketList;
     }
 
+    //Function to view the Ticket Address from the index
     function showTicketAddr(uint256 index) public view returns (Ticket) {
         return ticketList[index];
     }
 
-    // function showTicketId(uint256 index) public {
-    //     emit ShowTicketId(ticketList[index].getTicketId());
-    // }
-
+    //Function to view the Ticket's info through the index
     function showAllTickets(uint256 index)
         public
         view
@@ -99,7 +103,7 @@ contract Manager is Ownable {
         return Ticket(ticketList[index]).showInformation();
     }
 
-    //Function to see the tickets assigned to an address
+    //Function to view the Ticket's info through the address
     function showTicketsByAddress(address _ticketAddr)
         public
         view
@@ -118,7 +122,10 @@ contract Manager is Ownable {
         return Ticket(_ticketAddr).showInformation();
     }
 
-    //Función p/ transferir un ticket (status Transferible)
+    /*
+        Function to transfer a Ticket
+        The ticket must be Transferible and Valid
+    */
     function transferTicket(uint256 index, address newOwner) public payable {
         require(
             ticketList[index].getTransferStatus() ==
@@ -133,15 +140,18 @@ contract Manager is Ownable {
         (bool sent, ) = preOwner.call{value: msg.value}("");
         require(sent, "Error to transfer ticket");
         ticketList[index].changeOwner(newOwner);
-        //Owners[ticketList] = newOwner;
         emit TicketTransfered(msg.value, newOwner);
     }
 
+    //Function to get the Fee Percentage
     function getFee(uint256 ticketPrice) public view returns (uint256) {
         return (ticketPrice * fee) / 100;
     }
 
-    //Función p/ cambiar el precio de un ticket / Se cobra un 5% comision hacia el manager
+    /*
+        Function to change the ticket price
+        A 5% commission is charged to the manager
+    */
     function changeTicketPrice(Ticket ticket, uint256 newPrice) public payable {
         uint256 feeToCheck = getFee(newPrice);
 
@@ -156,7 +166,7 @@ contract Manager is Ownable {
         emit ShowComission(msg.value);
     }
 
-    //Función p/ retornar cantidad de tickets de la dApp y el precio total
+    //Function to return the quantity of tickets in the dApp and the total funds of them
     function showStatistitcs()
         public
         returns (uint256 allTickets, uint256 allFunds)
@@ -167,7 +177,7 @@ contract Manager is Ownable {
         return (ticketCount, ticketFunds);
     }
 
-    //Función p/ eliminar ticket de la lista
+    //Function to delete a ticket of the list
     function deleteTicket(uint256 ticketIndex) public {
         require(ticketIndex < ticketList.length, "Index not found");
 
