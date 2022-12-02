@@ -27,6 +27,7 @@ contract Manager is Ownable {
     event ShowComission(uint256);
     event TicketDeleted(uint256);
     event ViewStatistics(uint256, uint256);
+    event TicketCount(uint256);
 
     //Receive & fallback so that the contract can receive ethers
     receive() external payable {
@@ -51,7 +52,8 @@ contract Manager is Ownable {
         EventType _eventType,
         TicketStatus _ticketStatus,
         TransferStatus _transferStatus,
-        uint256 _price
+        uint256 _price,
+        address
     ) public payable {
         Ticket ticket = new Ticket(
             _eventName,
@@ -71,7 +73,8 @@ contract Manager is Ownable {
     }
 
     //Function to see all tickets in the dApp
-    function totalTickets() public view returns (uint256 total) {
+    function totalTickets() public returns (uint256 total) {
+        emit TicketCount(total);
         return ticketList.length;
     }
 

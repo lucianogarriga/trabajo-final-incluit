@@ -4,25 +4,26 @@ const utils = require("./helpers/utils");
 contract("Manager", function (accounts) {
 
   let contract;
-  //Address del deploy del contrato
+  //Address who deploy the contract
   const [peter, daniel] = accounts;
 
   beforeEach(async () => {
-    //asignamos valor a la VAR global ya declarada
-    //Debemos usar .new() xq necesitamos 1 nueva instancia x cada test 
-    // y utiliza 1 address unico para c/ test
+    //Asign value to the global variable 
+    //Must use .new() because we need a new instance for each test 
+    //and utilice 1 unique address for each test
     contract = await Manager.new();
 
   });
 
-  //1er test = Funcion de Create Ticket
+  //1er test = Funtion Create Ticket
   context("Function: createTicket", async function () {
+    //1 Test to add a Ticket to list
     it("should add the Ticket to the list", async function () {
-      //1) SET UP = Inicializar variables 
+      //1) SET UP = Initialize variables 
       //In BeforeEach()
 
-      //2) ACT = Ejecutar lo que se va a testear
-      //agarramos la instancia (contract) y llamamos la funcion (createTicket)
+      //2) ACT = Execute what will be tested
+      //we take the instance (contract) and call the function (createTicket)
       await contract.createTicket(
         "Partido Argentina Mexico",
         "26 de Noviembre",
@@ -34,15 +35,36 @@ contract("Manager", function (accounts) {
         peter
       )
 
-      //verificar cuantos elementos tiene la lista y lo guardamos en una VAR
+      //check how many elements the list has and store it in a VAR
       let ticketList = await contract.getTickets();
 
-      //3) ASSERT = Comprobar que los datos que devuelve son los correctos
-      //que la longitud del array tenga la cantidad de Players que agregamos (1)
-      //en caso de no ser correcto, que tire el error y emita el mensaje
+      //3) ASSERT = Check that the data returned are correct.
+      //Check that the length of the array has the number of Players we add (1)
+      //if it is not correct, throw the error and issue the message
       assert.equal(ticketList.length, 1, "Ticket list should be 1");
     })
 
+    //2 Test to add a Ticket to list
+    it("should fail if the caller is not the owner", async function () {
+      //1) SET UP = Initialize variables 
+      let notOwner = daniel;
+      //In BeforeEach()
+
+      //2) ACT = Execute what will be tested
+      //we take the instance (contract) and call the function (createTicket)
+      await utils.shouldThrow(
+      contract.createTicket(
+        "Partido Argentina Polonia",
+        "30 de Noviembre",
+        "Partido Fase de Grupos Qatar",
+        0,
+        0,
+        0,
+        2000,
+        {from: notOwner}
+        )
+      )
+    })
     
   })
 });
