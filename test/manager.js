@@ -8,7 +8,6 @@ contract("Manager", function (accounts) {
   const [peter, daniel] = accounts;
 
   beforeEach(async () => {
-    //Asign value to the global variable 
     //Must use .new() because we need a new instance for each test 
     //and utilice 1 unique address for each test
     contract = await Manager.new();
@@ -23,8 +22,7 @@ contract("Manager", function (accounts) {
       //In BeforeEach()
 
       //2) ACT = Execute what will be tested
-      //we take the instance (contract) and call the function (createTicket)
-      await contract.createTicket(
+       await contract.createTicket(
         "Partido Argentina Mexico",
         "26 de Noviembre",
         "Partido Fase de Grupos Qatar",
@@ -33,14 +31,9 @@ contract("Manager", function (accounts) {
         0,
         1100,
         peter
-      )
-
+      ) 
       //check how many elements the list has and store it in a VAR
       let ticketList = await contract.getTickets();
-
-      //3) ASSERT = Check that the data returned are correct.
-      //Check that the length of the array has the number of Players we add (1)
-      //if it is not correct, throw the error and issue the message
       assert.equal(ticketList.length, 1, "Ticket list should be 1");
     })
 
@@ -61,10 +54,75 @@ contract("Manager", function (accounts) {
         0,
         0,
         2000,
+        //address who call the function
         {from: notOwner}
         )
       )
     })
+
+    //3 Test to verify it call the event
+    // it("should emit event TicketCreated", async function () {
+    //   // Set up  
+    //   let ownerOfPlayer = peter;
+    //   //Act
+    //   let tx = await contract.createTicket(
+    //     "Partido Argentina Mexico",
+    //     "26 de Noviembre",
+    //     "Partido Fase de Grupos Qatar",
+    //     0,
+    //     0,
+    //     0,
+    //     1100,
+    //     ownerOfPlayer
+    //   )
+
+    //   let log = tx.logs[0];
+
+    //   //Assert
+    //   assert.equal(log.event, "TicketCreated");
+    // });
+  });
+  
+  // context("Function: deleteTicket", async function () {
+  //     //1 Test to check the function delete the ticket
+  //     it("should delete the ticket", async function (){
+  //       await contract.createTicket(
+  //         "Partido Argentina Mexico",
+  //         "26 de Noviembre",
+  //         "Partido Fase de Grupos Qatar",
+  //         0,
+  //         0,
+  //         0,
+  //         1100,
+  //         peter
+  //       )  
+
+  //       await contract.deleteTicket(0) 
+  //       //check how many elements the list has and store it in a VAR
+  //       let ticketList = await contract.getTickets();
+  //       assert.equal(ticketList.length, 0, "Ticket didn't delete");
+  //     })
+
+  //     //2 Test to verify it call the event
+  //   it("should emit event TicketDeleted", async function () {
+
+  //     await contract.createTicket(
+  //       "Partido Argentina Mexico",
+  //       "26 de Noviembre",
+  //       "Partido Fase de Grupos Qatar",
+  //       0,
+  //       0,
+  //       0,
+  //       1100,
+  //       peter
+  //     )   
+
+  //     let tx = await contract.deleteTicket(0) 
+  //     let log = tx.logs[0];
+
+  //     //Assert
+  //     assert.equal(log.event, "TicketDeleted");
+  //   });
     
-  })
+  // })
 });
