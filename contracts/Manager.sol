@@ -155,7 +155,27 @@ contract Manager is Ownable {
         Function to change the ticket price
         A 5% commission is charged to the manager
     */
-    function changeTicketPrice(Ticket ticket, uint256 newPrice) public payable {
+    function changeTicketPrice(address ticketAddr, uint256 newPrice)
+        public
+        payable
+    {
+        Ticket newTicket = Ticket(ticketAddr);
+        uint256 feeToCheck = getFee(newPrice);
+
+        require(
+            msg.value >= feeToCheck,
+            "Fee received isn't enough. Send the 5% of new price"
+        );
+
+        Ticket(newTicket).changePrice(newPrice);
+
+        emit NewTicketPrice(newPrice);
+        emit ShowComission(msg.value);
+    }
+
+    /* Another way of changeTicketPrice method
+    
+        function changeTicketPrice(Ticket ticket, uint256 newPrice) public payable {
         uint256 feeToCheck = getFee(newPrice);
 
         require(
@@ -168,9 +188,10 @@ contract Manager is Ownable {
         emit NewTicketPrice(newPrice);
         emit ShowComission(msg.value);
     }
+    */
 
     //Function to return the quantity of tickets in the dApp and the total funds of them
-    function showStatistitcs()
+    function showStatistics()
         public
         returns (uint256 allTickets, uint256 allFunds)
     {
