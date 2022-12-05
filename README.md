@@ -3,26 +3,26 @@
 ## Lineamientos generales del proyecto
 
 
-- El proyecto debe utilizar la suite de truffle
+- El proyecto utiliza la suite de truffle.
 
-- El código del proyecto tiene que estar bien formateado, siguiendo los estándares recomendados por solidity.
+- El código del proyecto está formateado conforme estándares recomendados por solidity.
 
-- Los contratos tienen que tener sus unit tests, tratando de tener el mayor coverage posible.
+- Los contratos cuentan con sus unit tests (10 Unit Tests en el contrato Manager.sol, y 6 Unit Tests en el contrato Ticket.sol), intentando cubrir el mayor coverage posible.
 
-- El proyecto debe tener al menos una migration.
+- El proyecto cuenta con una migration.
 
-- El proyecto debería deployarse en una testnet (goerli).
+- El proyecto se encuentra deployado en la testnet de Goerli (https://goerli.etherscan.io/tx/0xc9f8ed9df2e2e2be32c6e6d5696532fdb5351fadccf2eccbb3ccf966c7b54a9e).
+
+- Opcional: agregar algún script para ejecutar (Está agregado en la respectiva carpeta).
 
 - Opcional: El proyecto debería usar algún estándar RC.
-
-- Opcional: agregar algún script para ejecutar.
 
 # Caso de uso
 
 Los directivos de una empresa local encargada de vender entradas a eventos están buscando competir de lleno en el mundo blockchain. Para eso planean desarrollar una aplicación para gestionar directamente en la testnet goerli los tickets y entradas a diferentes tipos de eventos. 
 El MVP (minimum viable product), está orientado a buscar que los compradores que ya tienen sus tickets los puedan “tokenizar” y crear tickets virtuales dentro de la plataforma. De esta manera se diseñó lo siguiente: 
 
-El proyecto deberá estar estructurado con un contrato Manager y un contrato Ticket. Las responsabilidades de cada uno son las siguientes: 
+El proyecto deber estar estructurado con un contrato Manager y un contrato Ticket. Las responsabilidades de cada uno son las siguientes: 
 
 ### Manager
 
