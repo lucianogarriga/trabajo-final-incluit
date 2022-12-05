@@ -136,7 +136,11 @@ contract Manager is Ownable {
         Function to transfer a Ticket
         The ticket must be Transferible and Valid
     */
-    function transferTicket(uint256 index, address newOwner) public payable {
+    function transferTicket(uint256 index, address newOwner)
+        public
+        payable
+        onlyOwner
+    {
         require(
             ticketList[index].getTransferStatus() ==
                 TransferStatus.TRANSFERIBLE,
@@ -165,6 +169,7 @@ contract Manager is Ownable {
     function changeTicketPrice(address ticketAddr, uint256 newPrice)
         public
         payable
+        onlyOwner
     {
         Ticket newTicket = Ticket(ticketAddr);
         uint256 feeToCheck = getFee(newPrice);
