@@ -17,6 +17,7 @@ contract Manager is Ownable {
     uint256 ticketCount;
     //Total funds of all tickets
     uint256 ticketFunds;
+    string private name;
 
     /*Events to call in many functions, 
     to improve user experience*/
@@ -28,6 +29,7 @@ contract Manager is Ownable {
     event TicketDeleted(uint256);
     event ViewStatistics(uint256, uint256);
     event TicketCount(uint256);
+    event ManagerName(string name);
 
     //Receive & fallback so that the contract can receive ethers
     receive() external payable {
@@ -38,8 +40,13 @@ contract Manager is Ownable {
         emit FundsReceived(msg.value);
     }
 
-    constructor() {
+    constructor(string memory managerName) {
         MANAGER = msg.sender;
+        name = managerName;
+    }
+
+    function getManagerName() public {
+        emit ManagerName(name);
     }
 
     /*FUNCTION 1 => Tokenize a ticket

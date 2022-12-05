@@ -30,6 +30,7 @@ contract Ticket {
 
     event newTransferStatus(string);
     event newTicketStatus(string);
+    event ShowPrice(uint256 price);
 
     constructor(
         //It's a convention (not a requirement) to name function parameter variables with (_)
@@ -57,6 +58,10 @@ contract Ticket {
     modifier isOwner() {
         require(msg.sender == owner, "");
         _;
+    }
+
+    function getPrice() public {
+        emit ShowPrice(price);
     }
 
     function getMarketPrice() external view returns (uint256) {
