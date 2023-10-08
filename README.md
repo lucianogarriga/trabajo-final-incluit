@@ -3,6 +3,8 @@
 ## Lineamientos generales del proyecto
 
 
+![Diagrama Ejercicio Integrador](/diagrama_ejercicio_integrador.png)
+
 - El proyecto utiliza la suite de truffle.
 
 - El código del proyecto está formateado conforme estándares recomendados por solidity.
@@ -15,7 +17,8 @@
 
 - Opcional: agregar algún script para ejecutar (Está agregado en la respectiva carpeta).
 
-- Opcional: El proyecto debería usar algún estándar RC.
+- Opcional: El proyecto debería usar algún estándar ERC.
+
 
 # Caso de uso
 
